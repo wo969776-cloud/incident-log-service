@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-service
+  namespace: incident
+  labels:
+    app: frontend-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend-service
+  template:
+    metadata:
+      labels:
+        app: frontend-service
+    spec:
+      containers:
+        - name: frontend-service
+          image: wo9697/frontend-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8004
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: msa-secret
+                  key: SECRET_KEY
+            - name: AUTH_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: msa-config
+                  key: AUTH_SERVICE_URL
+            - name: INCIDENT_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: msa-config
+                  key: INCIDENT_SERVICE_URL
+            - name: BOARD_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: msa-config
+                  key: BOARD_SERVICE_URL
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8004
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8004
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: incident
+spec:
+  selector:
+    app: frontend-service
+  ports:
+    - port: 8004
+      targetPort: 8004
+  type: ClusterIP

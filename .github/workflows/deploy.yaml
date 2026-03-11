@@ -1,0 +1,275 @@
+# ============================================================
+# GitHub Actions CI/CD Pipeline
+# GitHub  : wo969776-cloud/incident-log-service
+# DockerHub: wo9697
+#
+# ▼ GitHub Secrets 등록 필요 (2개만!)
+#   DOCKERHUB_TOKEN  : Docker Hub Access Token
+#   KUBECONFIG_DATA  : cat ~/.kube/config | base64 -w 0
+#
+# ※ DOCKERHUB_USERNAME(wo9697)은 하드코딩 → Secret 불필요
+# ============================================================
+
+name: MSA Build & Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:   # 수동 실행 버튼 활성화
+
+env:
+  DOCKERHUB_USERNAME: wo9697
+  NAMESPACE: incident
+
+jobs:
+
+  # ──────────────────────────────────────────────────────────
+  # STEP 0: 변경된 서비스만 감지
+  # ──────────────────────────────────────────────────────────
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      auth:     ${{ steps.filter.outputs.auth }}
+      incident: ${{ steps.filter.outputs.incident }}
+      board:    ${{ steps.filter.outputs.board }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      gateway:  ${{ steps.filter.outputs.gateway }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            auth:
+              - 'auth-service/**'
+            incident:
+              - 'incident-service/**'
+            board:
+              - 'board-service/**'
+            frontend:
+              - 'frontend-service/**'
+            gateway:
+              - 'api-gateway/**'
+
+  # ──────────────────────────────────────────────────────────
+  # AUTH SERVICE → wo9697/auth-service
+  # ──────────────────────────────────────────────────────────
+  build-auth:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.auth == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker Hub 로그인
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: 이미지 빌드 & 푸시
+        uses: docker/build-push-action@v5
+        with:
+          context: ./auth-service
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: |
+            wo9697/auth-service:latest
+            wo9697/auth-service:${{ github.sha }}
+          cache-from: type=registry,ref=wo9697/auth-service:buildcache
+          cache-to:   type=registry,ref=wo9697/auth-service:buildcache,mode=max
+
+      - name: K8s 배포
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > /tmp/kubeconfig
+          export KUBECONFIG=/tmp/kubeconfig
+          kubectl set image deployment/auth-service \
+            auth-service=wo9697/auth-service:${{ github.sha }} \
+            -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/auth-service \
+            -n ${{ env.NAMESPACE }} --timeout=120s
+
+  # ──────────────────────────────────────────────────────────
+  # INCIDENT SERVICE → wo9697/incident-service
+  # ──────────────────────────────────────────────────────────
+  build-incident:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.incident == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker Hub 로그인
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: 이미지 빌드 & 푸시
+        uses: docker/build-push-action@v5
+        with:
+          context: ./incident-service
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: |
+            wo9697/incident-service:latest
+            wo9697/incident-service:${{ github.sha }}
+          cache-from: type=registry,ref=wo9697/incident-service:buildcache
+          cache-to:   type=registry,ref=wo9697/incident-service:buildcache,mode=max
+
+      - name: K8s 배포
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > /tmp/kubeconfig
+          export KUBECONFIG=/tmp/kubeconfig
+          kubectl set image deployment/incident-service \
+            incident-service=wo9697/incident-service:${{ github.sha }} \
+            -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/incident-service \
+            -n ${{ env.NAMESPACE }} --timeout=120s
+
+  # ──────────────────────────────────────────────────────────
+  # BOARD SERVICE → wo9697/board-service
+  # ──────────────────────────────────────────────────────────
+  build-board:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.board == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker Hub 로그인
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: 이미지 빌드 & 푸시
+        uses: docker/build-push-action@v5
+        with:
+          context: ./board-service
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: |
+            wo9697/board-service:latest
+            wo9697/board-service:${{ github.sha }}
+          cache-from: type=registry,ref=wo9697/board-service:buildcache
+          cache-to:   type=registry,ref=wo9697/board-service:buildcache,mode=max
+
+      - name: K8s 배포
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > /tmp/kubeconfig
+          export KUBECONFIG=/tmp/kubeconfig
+          kubectl set image deployment/board-service \
+            board-service=wo9697/board-service:${{ github.sha }} \
+            -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/board-service \
+            -n ${{ env.NAMESPACE }} --timeout=120s
+
+  # ──────────────────────────────────────────────────────────
+  # FRONTEND SERVICE → wo9697/frontend-service
+  # ──────────────────────────────────────────────────────────
+  build-frontend:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.frontend == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker Hub 로그인
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: 이미지 빌드 & 푸시
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend-service
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: |
+            wo9697/frontend-service:latest
+            wo9697/frontend-service:${{ github.sha }}
+          cache-from: type=registry,ref=wo9697/frontend-service:buildcache
+          cache-to:   type=registry,ref=wo9697/frontend-service:buildcache,mode=max
+
+      - name: K8s 배포
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > /tmp/kubeconfig
+          export KUBECONFIG=/tmp/kubeconfig
+          kubectl set image deployment/frontend-service \
+            frontend-service=wo9697/frontend-service:${{ github.sha }} \
+            -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/frontend-service \
+            -n ${{ env.NAMESPACE }} --timeout=120s
+
+  # ──────────────────────────────────────────────────────────
+  # API GATEWAY → wo9697/api-gateway
+  # ──────────────────────────────────────────────────────────
+  build-gateway:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.gateway == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker Hub 로그인
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: 이미지 빌드 & 푸시
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api-gateway
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: |
+            wo9697/api-gateway:latest
+            wo9697/api-gateway:${{ github.sha }}
+          cache-from: type=registry,ref=wo9697/api-gateway:buildcache
+          cache-to:   type=registry,ref=wo9697/api-gateway:buildcache,mode=max
+
+      - name: K8s 배포
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > /tmp/kubeconfig
+          export KUBECONFIG=/tmp/kubeconfig
+          kubectl set image deployment/api-gateway \
+            api-gateway=wo9697/api-gateway:${{ github.sha }} \
+            -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/api-gateway \
+            -n ${{ env.NAMESPACE }} --timeout=120s
+
+  # ──────────────────────────────────────────────────────────
+  # 배포 결과 요약
+  # ──────────────────────────────────────────────────────────
+  notify:
+    needs: [build-auth, build-incident, build-board, build-frontend, build-gateway]
+    if: always() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 배포 결과 출력
+        run: |
+          echo "========================================"
+          echo "  MSA 배포 결과 (wo969776-cloud)"
+          echo "========================================"
+          echo "  auth-service     : ${{ needs.build-auth.result }}"
+          echo "  incident-service : ${{ needs.build-incident.result }}"
+          echo "  board-service    : ${{ needs.build-board.result }}"
+          echo "  frontend-service : ${{ needs.build-frontend.result }}"
+          echo "  api-gateway      : ${{ needs.build-gateway.result }}"
+          echo "========================================"
