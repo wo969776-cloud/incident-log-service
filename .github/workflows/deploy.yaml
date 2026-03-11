@@ -1,4 +1,4 @@
-name: MSA Build & Deploy
+name: MSA Build & Push
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
 
 env:
   DOCKERHUB_USERNAME: wo9697
-  NAMESPACE: incident
 
 jobs:
 
@@ -26,21 +25,14 @@ jobs:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & Push
+      - name: Build & Push auth-service
         uses: docker/build-push-action@v5
         with:
           context: ./auth-service
           push: true
           tags: |
             wo9697/auth-service:latest
-            wo9697/auth-service:${{ github.sha }}
 
-      - name: Deploy
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
-          kubectl set image deployment/auth-service auth-service=wo9697/auth-service:${{ github.sha }} -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/auth-service -n ${{ env.NAMESPACE }}
 
 # -------------------------------------------------
 # INCIDENT SERVICE
@@ -57,21 +49,14 @@ jobs:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & Push
+      - name: Build & Push incident-service
         uses: docker/build-push-action@v5
         with:
           context: ./incident-service
           push: true
           tags: |
             wo9697/incident-service:latest
-            wo9697/incident-service:${{ github.sha }}
 
-      - name: Deploy
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
-          kubectl set image deployment/incident-service incident-service=wo9697/incident-service:${{ github.sha }} -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/incident-service -n ${{ env.NAMESPACE }}
 
 # -------------------------------------------------
 # BOARD SERVICE
@@ -88,21 +73,14 @@ jobs:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & Push
+      - name: Build & Push board-service
         uses: docker/build-push-action@v5
         with:
           context: ./board-service
           push: true
           tags: |
             wo9697/board-service:latest
-            wo9697/board-service:${{ github.sha }}
 
-      - name: Deploy
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
-          kubectl set image deployment/board-service board-service=wo9697/board-service:${{ github.sha }} -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/board-service -n ${{ env.NAMESPACE }}
 
 # -------------------------------------------------
 # FRONTEND SERVICE
@@ -119,21 +97,14 @@ jobs:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & Push
+      - name: Build & Push frontend-service
         uses: docker/build-push-action@v5
         with:
           context: ./frontend-service
           push: true
           tags: |
             wo9697/frontend-service:latest
-            wo9697/frontend-service:${{ github.sha }}
 
-      - name: Deploy
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
-          kubectl set image deployment/frontend-service frontend-service=wo9697/frontend-service:${{ github.sha }} -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/frontend-service -n ${{ env.NAMESPACE }}
 
 # -------------------------------------------------
 # API GATEWAY
@@ -150,18 +121,10 @@ jobs:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & Push
+      - name: Build & Push api-gateway
         uses: docker/build-push-action@v5
         with:
           context: ./api-gateway
           push: true
           tags: |
             wo9697/api-gateway:latest
-            wo9697/api-gateway:${{ github.sha }}
-
-      - name: Deploy
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
-          kubectl set image deployment/api-gateway api-gateway=wo9697/api-gateway:${{ github.sha }} -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/api-gateway -n ${{ env.NAMESPACE }}
