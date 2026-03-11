@@ -28,11 +28,13 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: node3.labs.local
+
       tolerations:
       - key: "db"
         operator: "Equal"
-        value: "true"
+        value: "only"
         effect: "NoSchedule"
+
       containers:
       - name: mariadb
         image: mariadb:10.6
@@ -46,11 +48,13 @@ spec:
         volumeMounts:
         - name: mariadb-storage
           mountPath: /var/lib/mysql
+
   volumeClaimTemplates:
   - metadata:
       name: mariadb-storage
     spec:
       accessModes: ["ReadWriteOnce"]
+      storageClassName: local-path
       resources:
         requests:
           storage: 5Gi
