@@ -26,13 +26,14 @@ spec:
       labels:
         app: mariadb-incident
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: node3.labs.local
+      nodeName: node3.labs.local
+
       tolerations:
       - key: "db"
         operator: "Equal"
         value: "only"
         effect: "NoSchedule"
+
       containers:
       - name: mariadb
         image: mariadb:10.6
@@ -46,6 +47,7 @@ spec:
         volumeMounts:
         - name: mariadb-storage
           mountPath: /var/lib/mysql
+
   volumeClaimTemplates:
   - metadata:
       name: mariadb-storage
