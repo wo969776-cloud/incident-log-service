@@ -1,0 +1,8 @@
+resources:
+- namespace.yaml
+- configmap-secret.yaml
+- auth/deployment.yaml
+- incident/deployment.yaml
+- board/deployment.yaml
+- frontend/deployment.yaml
+- gateway/deployment.yaml
