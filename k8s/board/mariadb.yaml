@@ -1,39 +1,37 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mariadb-auth
+  name: mariadb-board
   namespace: incident
 spec:
   clusterIP: None
   selector:
-    app: mariadb-auth
+    app: mariadb-board
   ports:
   - port: 3306
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mariadb-auth
+  name: mariadb-board
   namespace: incident
 spec:
-  serviceName: mariadb-auth
+  serviceName: mariadb-board
   replicas: 1
   selector:
     matchLabels:
-      app: mariadb-auth
+      app: mariadb-board
   template:
     metadata:
       labels:
-        app: mariadb-auth
+        app: mariadb-board
     spec:
       nodeName: node3.labs.local
-
       tolerations:
       - key: "db"
         operator: "Equal"
         value: "only"
         effect: "NoSchedule"
-
       containers:
       - name: mariadb
         image: mariadb:10.6
@@ -43,11 +41,10 @@ spec:
         - name: MYSQL_ROOT_PASSWORD
           value: password
         - name: MYSQL_DATABASE
-          value: auth_db
+          value: board_db
         volumeMounts:
         - name: mariadb-storage
           mountPath: /var/lib/mysql
-
   volumeClaimTemplates:
   - metadata:
       name: mariadb-storage
