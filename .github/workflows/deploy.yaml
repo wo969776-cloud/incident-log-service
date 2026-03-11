@@ -5,7 +5,6 @@
 #
 # ▼ GitHub Secrets 등록 필요 (2개만!)
 #   DOCKERHUB_TOKEN  : Docker Hub Access Token
-    mkdir -p $HOME/.kube
 #   KUBECONFIG_DATA  : cat ~/.kube/config | base64 -w 0
 #
 # ※ DOCKERHUB_USERNAME(wo9697)은 하드코딩 → Secret 불필요
