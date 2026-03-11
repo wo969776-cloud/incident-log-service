@@ -5,6 +5,7 @@
 #
 # ▼ GitHub Secrets 등록 필요 (2개만!)
 #   DOCKERHUB_TOKEN  : Docker Hub Access Token
+    mkdir -p $HOME/.kube
 #   KUBECONFIG_DATA  : cat ~/.kube/config | base64 -w 0
 #
 # ※ DOCKERHUB_USERNAME(wo9697)은 하드코딩 → Secret 불필요
@@ -86,8 +87,8 @@ jobs:
       - name: K8s 배포
         if: github.ref == 'refs/heads/main'
         run: |
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > /tmp/kubeconfig
-          export KUBECONFIG=/tmp/kubeconfig
+    mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
           kubectl set image deployment/auth-service \
             auth-service=wo9697/auth-service:${{ github.sha }} \
             -n ${{ env.NAMESPACE }}
@@ -126,8 +127,8 @@ jobs:
       - name: K8s 배포
         if: github.ref == 'refs/heads/main'
         run: |
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > /tmp/kubeconfig
-          export KUBECONFIG=/tmp/kubeconfig
+    mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
           kubectl set image deployment/incident-service \
             incident-service=wo9697/incident-service:${{ github.sha }} \
             -n ${{ env.NAMESPACE }}
@@ -166,8 +167,8 @@ jobs:
       - name: K8s 배포
         if: github.ref == 'refs/heads/main'
         run: |
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > /tmp/kubeconfig
-          export KUBECONFIG=/tmp/kubeconfig
+    mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
           kubectl set image deployment/board-service \
             board-service=wo9697/board-service:${{ github.sha }} \
             -n ${{ env.NAMESPACE }}
@@ -206,8 +207,8 @@ jobs:
       - name: K8s 배포
         if: github.ref == 'refs/heads/main'
         run: |
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > /tmp/kubeconfig
-          export KUBECONFIG=/tmp/kubeconfig
+    mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
           kubectl set image deployment/frontend-service \
             frontend-service=wo9697/frontend-service:${{ github.sha }} \
             -n ${{ env.NAMESPACE }}
@@ -246,8 +247,8 @@ jobs:
       - name: K8s 배포
         if: github.ref == 'refs/heads/main'
         run: |
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > /tmp/kubeconfig
-          export KUBECONFIG=/tmp/kubeconfig
+    mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
           kubectl set image deployment/api-gateway \
             api-gateway=wo9697/api-gateway:${{ github.sha }} \
             -n ${{ env.NAMESPACE }}
