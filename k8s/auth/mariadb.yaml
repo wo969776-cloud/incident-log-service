@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-auth
+  namespace: incident
+spec:
+  clusterIP: None
+  selector:
+    app: mariadb-auth
+  ports:
+  - port: 3306
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mariadb-auth
+  namespace: incident
+spec:
+  serviceName: mariadb-auth
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb-auth
+  template:
+    metadata:
+      labels:
+        app: mariadb-auth
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: node3.labs.local
+      tolerations:
+      - key: "db"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      containers:
+      - name: mariadb
+        image: mariadb:10.6
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+        - name: MYSQL_DATABASE
+          value: auth_db
+        volumeMounts:
+        - name: mariadb-storage
+          mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: mariadb-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 5Gi

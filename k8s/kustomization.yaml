@@ -1,8 +1,15 @@
 resources:
 - namespace.yaml
 - configmap-secret.yaml
+
 - auth/deployment.yaml
-- incident/deployment.yaml
+- auth/mariadb.yaml
+
 - board/deployment.yaml
-- frontend/deployment.yaml
+- board/mariadb.yaml
+
+- incident/deployment.yaml
+- incident/mariadb.yaml
+
 - gateway/deployment.yaml
+- frontend/deployment.yaml
