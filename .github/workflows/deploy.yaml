@@ -87,7 +87,6 @@ jobs:
       - name: K8s 배포
         if: github.ref == 'refs/heads/main'
         run: |
-    mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
           kubectl set image deployment/auth-service \
             auth-service=wo9697/auth-service:${{ github.sha }} \
@@ -127,7 +126,6 @@ jobs:
       - name: K8s 배포
         if: github.ref == 'refs/heads/main'
         run: |
-    mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
           kubectl set image deployment/incident-service \
             incident-service=wo9697/incident-service:${{ github.sha }} \
@@ -167,7 +165,6 @@ jobs:
       - name: K8s 배포
         if: github.ref == 'refs/heads/main'
         run: |
-    mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
           kubectl set image deployment/board-service \
             board-service=wo9697/board-service:${{ github.sha }} \
@@ -207,7 +204,6 @@ jobs:
       - name: K8s 배포
         if: github.ref == 'refs/heads/main'
         run: |
-    mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
           kubectl set image deployment/frontend-service \
             frontend-service=wo9697/frontend-service:${{ github.sha }} \
@@ -247,7 +243,6 @@ jobs:
       - name: K8s 배포
         if: github.ref == 'refs/heads/main'
         run: |
-    mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
           kubectl set image deployment/api-gateway \
             api-gateway=wo9697/api-gateway:${{ github.sha }} \
