@@ -3,8 +3,6 @@ name: MSA Build & Deploy
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 env:
@@ -13,10 +11,12 @@ env:
 
 jobs:
 
-# --------------------------------------------------
-# 변경된 서비스 감지
-# --------------------------------------------------
+# -------------------------------------------------
+# AUTH SERVICE
+# -------------------------------------------------
+  build-auth:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -25,32 +25,29 @@ jobs:
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - uses: docker/setup-buildx-action@v3
 
       - name: Build & Push
         uses: docker/build-push-action@v5
         with:
           context: ./auth-service
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: true
           tags: |
             wo9697/auth-service:latest
             wo9697/auth-service:${{ github.sha }}
 
       - name: Deploy
-        if: github.ref == 'refs/heads/main'
         run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
           kubectl set image deployment/auth-service auth-service=wo9697/auth-service:${{ github.sha }} -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/auth-service -n ${{ env.NAMESPACE }} --timeout=120s
+          kubectl rollout status deployment/auth-service -n ${{ env.NAMESPACE }}
 
-
-# --------------------------------------------------
+# -------------------------------------------------
 # INCIDENT SERVICE
-# --------------------------------------------------
+# -------------------------------------------------
   build-incident:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -59,32 +56,29 @@ jobs:
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - uses: docker/setup-buildx-action@v3
 
       - name: Build & Push
         uses: docker/build-push-action@v5
         with:
           context: ./incident-service
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: true
           tags: |
             wo9697/incident-service:latest
             wo9697/incident-service:${{ github.sha }}
 
       - name: Deploy
-        if: github.ref == 'refs/heads/main'
         run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
           kubectl set image deployment/incident-service incident-service=wo9697/incident-service:${{ github.sha }} -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/incident-service -n ${{ env.NAMESPACE }} --timeout=120s
+          kubectl rollout status deployment/incident-service -n ${{ env.NAMESPACE }}
 
-
-# --------------------------------------------------
+# -------------------------------------------------
 # BOARD SERVICE
-# --------------------------------------------------
+# -------------------------------------------------
   build-board:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -93,32 +87,29 @@ jobs:
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - uses: docker/setup-buildx-action@v3
 
       - name: Build & Push
         uses: docker/build-push-action@v5
         with:
           context: ./board-service
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: true
           tags: |
             wo9697/board-service:latest
             wo9697/board-service:${{ github.sha }}
 
       - name: Deploy
-        if: github.ref == 'refs/heads/main'
         run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
           kubectl set image deployment/board-service board-service=wo9697/board-service:${{ github.sha }} -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/board-service -n ${{ env.NAMESPACE }} --timeout=120s
+          kubectl rollout status deployment/board-service -n ${{ env.NAMESPACE }}
 
-
-# --------------------------------------------------
+# -------------------------------------------------
 # FRONTEND SERVICE
-# --------------------------------------------------
+# -------------------------------------------------
   build-frontend:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -127,32 +118,29 @@ jobs:
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - uses: docker/setup-buildx-action@v3
 
       - name: Build & Push
         uses: docker/build-push-action@v5
         with:
           context: ./frontend-service
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: true
           tags: |
             wo9697/frontend-service:latest
             wo9697/frontend-service:${{ github.sha }}
 
       - name: Deploy
-        if: github.ref == 'refs/heads/main'
         run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
           kubectl set image deployment/frontend-service frontend-service=wo9697/frontend-service:${{ github.sha }} -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/frontend-service -n ${{ env.NAMESPACE }} --timeout=120s
+          kubectl rollout status deployment/frontend-service -n ${{ env.NAMESPACE }}
 
-
-# --------------------------------------------------
+# -------------------------------------------------
 # API GATEWAY
-# --------------------------------------------------
+# -------------------------------------------------
   build-gateway:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -162,42 +150,18 @@ jobs:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - uses: docker/setup-buildx-action@v3
-
       - name: Build & Push
         uses: docker/build-push-action@v5
         with:
           context: ./api-gateway
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: true
           tags: |
             wo9697/api-gateway:latest
             wo9697/api-gateway:${{ github.sha }}
 
       - name: Deploy
-        if: github.ref == 'refs/heads/main'
         run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
           kubectl set image deployment/api-gateway api-gateway=wo9697/api-gateway:${{ github.sha }} -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/api-gateway -n ${{ env.NAMESPACE }} --timeout=120s
-
-
-# --------------------------------------------------
-# DEPLOY SUMMARY
-# --------------------------------------------------
-  notify:
-    needs: [build-auth, build-incident, build-board, build-frontend, build-gateway]
-    if: always() && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: 결과 출력
-        run: |
-          echo "===================================="
-          echo "MSA Deployment Result"
-          echo "===================================="
-          echo "auth-service     : ${{ needs.build-auth.result }}"
-          echo "incident-service : ${{ needs.build-incident.result }}"
-          echo "board-service    : ${{ needs.build-board.result }}"
-          echo "frontend-service : ${{ needs.build-frontend.result }}"
-          echo "api-gateway      : ${{ needs.build-gateway.result }}"
-          echo "===================================="
+          kubectl rollout status deployment/api-gateway -n ${{ env.NAMESPACE }}
