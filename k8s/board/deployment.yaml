@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
         - name: board-service
-          image: wo9697/board-service:latest
-          imagePullPolicy: Always
+          image: wo9697/board-service:v1
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8003
           env:

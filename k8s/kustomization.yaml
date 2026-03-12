@@ -4,12 +4,15 @@ resources:
 
 - auth/deployment.yaml
 - auth/mariadb.yaml
+- auth/hpa.yaml
 
 - board/deployment.yaml
 - board/mariadb.yaml
+- board/hpa.yaml
 
 - incident/deployment.yaml
 - incident/mariadb.yaml
+- incident/hpa.yaml
 
 - gateway/deployment.yaml
 - frontend/deployment.yaml

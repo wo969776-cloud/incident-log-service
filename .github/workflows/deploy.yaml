@@ -31,7 +31,7 @@ jobs:
           context: ./auth-service
           push: true
           tags: |
-            wo9697/auth-service:latest
+            wo9697/auth-service:v1
 
 
 # -------------------------------------------------
@@ -55,7 +55,7 @@ jobs:
           context: ./incident-service
           push: true
           tags: |
-            wo9697/incident-service:latest
+            wo9697/incident-service:v1
 
 
 # -------------------------------------------------
@@ -79,7 +79,7 @@ jobs:
           context: ./board-service
           push: true
           tags: |
-            wo9697/board-service:latest
+            wo9697/board-service:v1
 
 
 # -------------------------------------------------
@@ -103,7 +103,7 @@ jobs:
           context: ./frontend-service
           push: true
           tags: |
-            wo9697/frontend-service:latest
+            wo9697/frontend-service:v1
 
 
 # -------------------------------------------------
@@ -127,4 +127,4 @@ jobs:
           context: ./api-gateway
           push: true
           tags: |
-            wo9697/api-gateway:latest
+            wo9697/api-gateway:v1

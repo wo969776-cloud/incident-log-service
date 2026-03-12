@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: wo9697/auth-service:latest   # CI/CD에서 치환됨
-          imagePullPolicy: Always
+          image: wo9697/auth-service:v1   # CI/CD에서 치환됨
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8001
           env:

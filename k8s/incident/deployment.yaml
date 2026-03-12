@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
         - name: incident-service
-          image: wo9697/incident-service:latest
-          imagePullPolicy: Always
+          image: wo9697/incident-service:v1
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8002
           env:

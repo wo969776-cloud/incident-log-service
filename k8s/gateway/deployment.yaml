@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: wo9697/api-gateway:latest
-          imagePullPolicy: Always
+          image: wo9697/api-gateway:v1
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
           env:
