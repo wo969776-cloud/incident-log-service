@@ -16,10 +16,9 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev_secret_key_change_me")
 
 # 내부 서비스 URL (K8s Service DNS 사용)
-AUTH_URL     = os.environ.get("AUTH_SERVICE_URL",     "http://auth-service:8001")
-INCIDENT_URL = os.environ.get("INCIDENT_SERVICE_URL", "http://incident-service:8002")
-BOARD_URL    = os.environ.get("BOARD_SERVICE_URL",    "http://board-service:8003")
-
+AUTH_URL     = os.environ.get("AUTH_SERVICE_URL", "http://auth-service.incident.svc.cluster.local:8001")
+INCIDENT_URL = os.environ.get("INCIDENT_SERVICE_URL", "http://incident-service.incident.svc.cluster.local:8002")
+BOARD_URL    = os.environ.get("BOARD_SERVICE_URL", "http://board-service.incident.svc.cluster.local:8003")
 
 # ── 헬퍼 ─────────────────────────────────────────────────
 def _auth_header() -> dict:
