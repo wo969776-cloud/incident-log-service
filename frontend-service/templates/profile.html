@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Profile</title>
+<style>
+body{
+font-family:Arial;
+background:#f4f6f9;
+}
+
+.container{
+width:500px;
+margin:80px auto;
+background:white;
+padding:40px;
+border-radius:8px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+h1{
+text-align:center;
+}
+
+.info{
+margin-top:20px;
+}
+
+.info div{
+margin-bottom:10px;
+}
+
+button{
+margin-top:20px;
+padding:10px;
+width:100%;
+background:#2d6cdf;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+a{
+text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>User Profile</h1>
+
+<div class="info">
+
+<div><b>ID:</b> {{ user.id }}</div>
+<div><b>Username:</b> {{ user.username }}</div>
+<div><b>Email:</b> {{ user.email }}</div>
+
+</div>
+
+<a href="/ui/home">
+<button>Back to Home</button>
+</a>
+
+</div>
+
+</body>
+</html>
