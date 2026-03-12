@@ -16,7 +16,7 @@ spec:
       serviceAccountName: msa-service-account
       containers:
       - name: frontend-service
-        image: wo9697/frontend-service:v1
+        image: wo9697/frontend-service:v2
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8004
