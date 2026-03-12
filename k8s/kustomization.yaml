@@ -22,7 +22,6 @@ resources:
 
 - ingress.yaml
 
-- security/serviceaccount.yaml
 - security/rbac.yaml
 - security/networkpolicy-default-deny.yaml
 - security/networkpolicy-allow-internal.yaml
