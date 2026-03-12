@@ -22,3 +22,7 @@ resources:
 - security/networkpolicy-allow-internal.yaml
 - security/networkpolicy-allow-monitoring.yaml
 - security/networkpolicy-allow-ingress.yaml
+
+- gateway/service.yaml
+- frontend/service.yaml
+- ingress.yaml
