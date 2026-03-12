@@ -16,3 +16,9 @@ resources:
 
 - gateway/deployment.yaml
 - frontend/deployment.yaml
+
+- security/rbac.yaml
+- security/networkpolicy-default-deny.yaml
+- security/networkpolicy-allow-internal.yaml
+- security/networkpolicy-allow-monitoring.yaml
+- security/networkpolicy-allow-ingress.yaml

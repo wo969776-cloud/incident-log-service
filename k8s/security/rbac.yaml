@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: msa-service-account
+  namespace: incident
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: msa-role
+  namespace: incident
+rules:
+- apiGroups: [""]
+  resources: ["pods","services","endpoints"]
+  verbs: ["get","list","watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: msa-rolebinding
+  namespace: incident
+subjects:
+- kind: ServiceAccount
+  name: msa-service-account
+  namespace: incident
+roleRef:
+  kind: Role
+  name: msa-role
+  apiGroup: rbac.authorization.k8s.io

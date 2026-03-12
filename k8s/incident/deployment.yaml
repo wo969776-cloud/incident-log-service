@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: incident-service
   namespace: incident
-  labels:
-    app: incident-service
 spec:
   replicas: 2
   selector:
@@ -15,48 +13,22 @@ spec:
       labels:
         app: incident-service
     spec:
+      serviceAccountName: msa-service-account
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - incident-service
+              topologyKey: kubernetes.io/hostname
       containers:
-        - name: incident-service
-          image: wo9697/incident-service:v1
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8002
-          env:
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: msa-secret
-                  key: INCIDENT_DATABASE_URL
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8002
-            initialDelaySeconds: 10
-            periodSeconds: 15
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 8002
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "128Mi"
-            limits:
-              cpu: "300m"
-              memory: "256Mi"
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: incident-service
-  namespace: incident
-spec:
-  selector:
-    app: incident-service
-  ports:
-    - port: 8002
-      targetPort: 8002
-  type: ClusterIP
+      - name: incident-service
+        image: wo9697/incident-service:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8003
