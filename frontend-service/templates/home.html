@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Welcome {{ username }}</h2>
+
+<div class="row mt-4">
+
+<div class="col-md-4">
+<div class="card">
+<div class="card-body">
+<h5>Incident Management</h5>
+<p>View and manage incidents</p>
+<a href="/ui/incidents" class="btn btn-danger">Open</a>
+</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card">
+<div class="card-body">
+<h5>Public Board</h5>
+<p>Community posts</p>
+<a href="/ui/public-board" class="btn btn-primary">Open</a>
+</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card">
+<div class="card-body">
+<h5>Profile</h5>
+<p>User information</p>
+<a href="/ui/profile" class="btn btn-secondary">Open</a>
+</div>
+</div>
+</div>
+
+</div>
+
+{% endblock %}

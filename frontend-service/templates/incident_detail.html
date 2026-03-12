@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>{{ inc.title }}</h3>
+
+<p>Status: {{ inc.status }}</p>
+<p>Severity: {{ inc.severity }}</p>
+
+<h5 class="mt-4">Logs</h5>
+
+<ul class="list-group">
+
+{% for log in logs %}
+<li class="list-group-item">
+{{ log.action }}
+</li>
+{% endfor %}
+
+</ul>
+
+{% endblock %}

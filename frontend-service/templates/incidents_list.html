@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>Incidents</h3>
+
+<table class="table table-bordered">
+
+<tr>
+<th>ID</th>
+<th>Title</th>
+<th>Status</th>
+<th>Severity</th>
+</tr>
+
+{% for i in items %}
+<tr>
+<td>{{ i.id }}</td>
+<td><a href="/ui/incidents/{{ i.id }}">{{ i.title }}</a></td>
+<td>{{ i.status }}</td>
+<td>{{ i.severity }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

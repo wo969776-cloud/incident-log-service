@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>{{ "New Post" if mode=="new" else "Edit Post" }}</h3>
+
+<form method="post">
+
+<input class="form-control mb-2" name="title" placeholder="Title" value="{{ post.title if post }}">
+
+<textarea class="form-control mb-3" name="content" rows="5">{{ post.content if post }}</textarea>
+
+<button class="btn btn-success">Submit</button>
+
+</form>
+
+{% endblock %}
