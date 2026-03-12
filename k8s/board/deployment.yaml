@@ -8,27 +8,23 @@ spec:
   selector:
     matchLabels:
       app: board-service
+  strategy:
+    type: RollingUpdate
   template:
     metadata:
       labels:
         app: board-service
     spec:
-      serviceAccountName: msa-service-account
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - board-service
-              topologyKey: kubernetes.io/hostname
       containers:
-      - name: board-service
+      - name: board
         image: wo9697/board-service:v1
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
-        - containerPort: 8002
+        - containerPort: 8003
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "300m"
+            memory: "256Mi"

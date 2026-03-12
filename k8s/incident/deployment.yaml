@@ -8,27 +8,23 @@ spec:
   selector:
     matchLabels:
       app: incident-service
+  strategy:
+    type: RollingUpdate
   template:
     metadata:
       labels:
         app: incident-service
     spec:
-      serviceAccountName: msa-service-account
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - incident-service
-              topologyKey: kubernetes.io/hostname
       containers:
-      - name: incident-service
+      - name: incident
         image: wo9697/incident-service:v1
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
-        - containerPort: 8003
+        - containerPort: 8002
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "300m"
+            memory: "256Mi"

@@ -8,27 +8,34 @@ spec:
   selector:
     matchLabels:
       app: auth-service
+  strategy:
+    type: RollingUpdate
   template:
     metadata:
       labels:
         app: auth-service
     spec:
-      serviceAccountName: msa-service-account
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - auth-service
-              topologyKey: kubernetes.io/hostname
       containers:
-      - name: auth-service
+      - name: auth
         image: wo9697/auth-service:v1
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8001
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: msa-secret
+              key: AUTH_DATABASE_URL
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: msa-secret
+              key: JWT_SECRET
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "300m"
+            memory: "256Mi"

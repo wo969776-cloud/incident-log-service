@@ -8,15 +8,23 @@ spec:
   selector:
     matchLabels:
       app: api-gateway
+  strategy:
+    type: RollingUpdate
   template:
     metadata:
       labels:
         app: api-gateway
     spec:
-      serviceAccountName: msa-service-account
       containers:
-      - name: api-gateway
+      - name: gateway
         image: wo9697/api-gateway:v1
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
