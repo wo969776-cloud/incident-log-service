@@ -46,6 +46,12 @@ def _require_admin():
 def health():
     return jsonify({"status": "ok", "service": "frontend"})
 
+# ── Root Redirect (Ingress 대응) ─────────────────────────
+@app.get("/")
+def root():
+    if session.get("logged_in"):
+        return redirect(url_for("home"))
+    return redirect(url_for("login_form"))
 
 # ── Auth UI ──────────────────────────────────────────────
 @app.get("/ui/login")
